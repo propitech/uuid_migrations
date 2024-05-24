@@ -40,7 +40,7 @@ RSpec.describe UuidMigrations do
           database: "uuid_migrations_test",
           pool: 5,
           username: "postgres",
-          password: "postgress",
+          password: "postgres",
           host: "localhost",
           port: 5432,
         }
