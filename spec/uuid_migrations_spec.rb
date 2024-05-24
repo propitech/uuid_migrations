@@ -63,7 +63,7 @@ RSpec.describe UuidMigrations do
 
     it "automatically adds uuid to active_record table definition" do
       migration_class.new("create_uuids_table", 123).migrate(:up)
-      expect(connection).to be_column_exist(:testings, :uuid, :uuid)
+      expect(connection).to be_column_exist(:testings, :uuid, :uuid, null: false)
     end
 
     it "does not change the uuid if it exists" do

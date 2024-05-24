@@ -8,7 +8,7 @@ module UuidMigrations
   def add_uuid_column(td)
     return td if version.blank? || (UuidMigrations.start_with.present? && version < UuidMigrations.start_with)
 
-    td.column(:uuid, :uuid, default: -> { "gen_random_uuid()" }) if td[:uuid].blank?
+    td.column(:uuid, :uuid, default: -> { "gen_random_uuid()" }, null: false) if td[:uuid].blank?
     td
   end
 
