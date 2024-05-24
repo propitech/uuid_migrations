@@ -14,7 +14,12 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
 ## Usage
 
-TODO: Write usage instructions here
+By default, it will add `t.uuid` to all `create_table` in all your migrations.
+To prevent adding `t.uuid` to migrations that were created before installing this gem, create an initializer with:
+
+```ruby
+UuidMigrations.start_with = 20240524142747
+```
 
 ## Development
 
