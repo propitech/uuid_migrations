@@ -6,7 +6,7 @@ module UuidMigrations
   mattr_accessor :start_with
 
   def add_uuid_column(td)
-    return td if UuidMigrations.start_with.present? && version < UuidMigrations.start_with
+    return td if version.blank? || (UuidMigrations.start_with.present? && version < UuidMigrations.start_with)
 
     td.column(:uuid, :uuid, default: -> { "gen_random_uuid()" }) if td[:uuid].blank?
     td

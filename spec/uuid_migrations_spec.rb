@@ -78,5 +78,12 @@ RSpec.describe UuidMigrations do
 
       expect(connection).not_to be_column_exist(:testings, :uuid)
     end
+
+    it "does not add if version is blank" do
+      allow(UuidMigrations).to receive(:start_with).and_return(1000)
+      migration_class.new("existing_uuids_table").migrate(:up)
+
+      expect(connection).not_to be_column_exist(:testings, :uuid)
+    end
   end
 end
