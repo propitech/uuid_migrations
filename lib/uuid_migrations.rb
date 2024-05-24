@@ -1,14 +1,28 @@
 # frozen_string_literal: true
 
 require "active_record"
-require "active_record/connection_adapters/postgresql_adapter"
 
 module UuidMigrations
-  def build_create_table_definition(table_name, **options)
-    td = super
+  mattr_accessor :start_with
+
+  def add_uuid_column(td)
+    return td if UuidMigrations.start_with.present? && version < UuidMigrations.start_with
+
     td.column(:uuid, :uuid, default: -> { "gen_random_uuid()" }) if td[:uuid].blank?
     td
   end
+
+  def create_table(...)
+    if block_given?
+      super do |td|
+        yield(td)
+        add_uuid_column(td)
+      end
+    else
+      super
+    end
+  end
 end
 
-ActiveRecord::ConnectionAdapters::PostgreSQLAdapter.prepend UuidMigrations
+ActiveRecord::Migration.prepend UuidMigrations
+ActiveRecord::Migration::Current.prepend UuidMigrations
