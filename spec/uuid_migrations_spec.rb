@@ -42,7 +42,7 @@ RSpec.describe UuidMigrations do
           username: "postgres",
           password: "postgres",
           host: "localhost",
-          port: 5432,
+          port: 5432
         }
       }
     end
