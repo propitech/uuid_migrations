@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+## [0.2.2] - 2024-05-25
+
+- uuid column must not be null
+
 ## [0.2.1] - 2024-05-24
 
 - Fix bug on schema load
