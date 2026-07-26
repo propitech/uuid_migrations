@@ -11,17 +11,31 @@ on:
   merge_group:
 jobs:
   build:
-    runs-on: ubuntu-latest
-    name: Ruby ${{ matrix.ruby }}
-    strategy:
-      matrix:
-        ruby:
-          - '3.4.4'
+    # Routed by the repo variable RUNNER_LABELS, the same contract every other
+    # Propitech repo uses. A hardcoded ubuntu-latest is refused at dispatch once
+    # the org's hosted-minute allowance is spent (SQH-1418).
+    runs-on: ${{ vars.RUNNER_LABELS != '' && fromJSON(vars.RUNNER_LABELS) || 'ubuntu-latest' }}
+    name: Ruby 3.4
+    # ruby/setup-ruby refuses to install on a self-hosted runner: it reports the
+    # platform as self-hosted and tells the caller to populate RUNNER_TOOL_CACHE
+    # itself. Ruby therefore comes from the fleet's runner image, which carries
+    # 3.4.9. The digest is the one medusa's ruby-rails-ci.yml defaults to; bump
+    # them together.
+    container:
+      image: ghcr.io/propitech/runner-rails-8.1@sha256:df8bd45f9df37a79d7df7dfc7425c14a9ecadcaa4ec071776e0ddff4303e098a
+    env:
+      # The image ships gems under a root-owned system path; the runner uid
+      # cannot write there, so keep the bundle inside the workspace.
+      BUNDLE_PATH: vendor/bundle
+      # GitHub puts the job container and its services on a per-job bridge
+      # network, so Postgres answers on its service name, not on localhost.
+      POSTGRES_HOST: postgres
     services:
       postgres:
         image: postgres:16-alpine
-        ports:
-          - 5432:5432
+        # No host port is published: the job container reaches the service over
+        # the bridge network, and not publishing means concurrent jobs on one
+        # self-hosted VM cannot collide on 5432.
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -30,10 +44,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v7
-    - name: Set up Ruby
-      uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: ${{ matrix.ruby }}
-        bundler-cache: true
+    - name: Install gems
+      run: bundle install --jobs 4 --retry 3
     - name: Run the default task
       run: bundle exec rake
