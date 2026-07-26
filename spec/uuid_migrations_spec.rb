@@ -41,8 +41,11 @@ RSpec.describe UuidMigrations do
           pool: 5,
           username: "postgres",
           password: "postgres",
-          host: "localhost",
-          port: 5432
+          # On CI the suite runs inside a job container and Postgres is a
+          # service on the per-job bridge network, reachable by service name
+          # rather than on localhost. Locally the default still applies.
+          host: ENV.fetch("POSTGRES_HOST", "localhost"),
+          port: Integer(ENV.fetch("POSTGRES_PORT", 5432))
         }
       }
     end
