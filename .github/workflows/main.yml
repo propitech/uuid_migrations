@@ -13,7 +13,7 @@ jobs:
   build:
     # Routed by the repo variable RUNNER_LABELS, the same contract every other
     # Propitech repo uses. A hardcoded ubuntu-latest is refused at dispatch once
-    # the org's hosted-minute allowance is spent (SQH-1418).
+    # the org's hosted-minute allowance is spent.
     runs-on: ${{ vars.RUNNER_LABELS != '' && fromJSON(vars.RUNNER_LABELS) || 'ubuntu-latest' }}
     name: Ruby 3.4
     # ruby/setup-ruby refuses to install on a self-hosted runner: it reports the
